@@ -11,9 +11,9 @@ import {
 import { AuthDto } from './dto';
 import { Tokens } from './types';
 
-import { RtGuard } from 'src/auth/common/guards';
-import { GetCurrentUser, Public } from 'src/auth/common/decorators';
-import { GetCurrentUserId } from 'src/auth/common/decorators/get-current-user-id.decorator';
+import { RtGuard } from 'src/common/guards';
+import { GetCurrentUser, Public } from 'src/common/decorators';
+import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -43,9 +43,10 @@ export class AuthController {
   @UseGuards(RtGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  public refreshTokens(@GetCurrentUser() user: any) {
-    console.log(user.sub);
-
-    return this.authService.refreshTokens(user.sub, user.hashedRt);
+  public refreshTokens(
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    @GetCurrentUserId() userId: number,
+  ): Promise<Tokens> {
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 }

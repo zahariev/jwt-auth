@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
-import { AtGuard } from './auth/common/guards';
+import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({

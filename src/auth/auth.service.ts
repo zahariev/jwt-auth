@@ -57,6 +57,8 @@ export class AuthService {
       throw new ForbiddenException('Invalid credentials');
     }
     const tokens = await this.getTokens(user.id, user.email);
+    await this.updateRtHash(user.id, tokens.refresh_token);
+
     return tokens;
   }
 
@@ -80,6 +82,7 @@ export class AuthService {
         id: userId,
       },
     });
+
     if (!user || !user.hashedRt) {
       throw new ForbiddenException('Invalid credentials');
     }
@@ -88,8 +91,10 @@ export class AuthService {
     if (!isMatch) {
       throw new ForbiddenException('Invalid credentials');
     }
+
     const tokens = await this.getTokens(user.id, user.email);
     await this.updateRtHash(user.id, tokens.refresh_token);
+
     return tokens;
   }
 
