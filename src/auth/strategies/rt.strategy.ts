@@ -6,11 +6,11 @@ import { Request } from 'express';
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(configService: ConfigService) {
+  constructor(config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: configService.get<string>('RT_SECRET'),
+      ignoreExpiration: true,
+      secretOrKey: config.get<string>('RT_SECRET'),
       passReqToCallback: true,
     });
   }

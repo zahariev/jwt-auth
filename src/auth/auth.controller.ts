@@ -2,6 +2,7 @@ import { AuthService } from './auth.service';
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -37,11 +38,14 @@ export class AuthController {
   logout(@GetCurrentUserId() userId: number) {
     return this.authService.logout(userId);
   }
+
   @Public()
   @UseGuards(RtGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   public refreshTokens(@GetCurrentUser() user: any) {
+    console.log(user.sub);
+
     return this.authService.refreshTokens(user.sub, user.hashedRt);
   }
 }
