@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { AtGuard } from './auth/common/guards';
@@ -11,6 +12,12 @@ import { PrismaModule } from './prisma/prisma.module';
       useClass: AtGuard,
     },
   ],
-  imports: [AuthModule, PrismaModule],
+  imports: [
+    AuthModule,
+    PrismaModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
 })
 export class AppModule {}
