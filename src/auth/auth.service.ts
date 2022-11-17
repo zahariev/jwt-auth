@@ -6,7 +6,6 @@ import * as argon from 'argon2';
 import { Tokens } from './types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
-import { stringify } from 'querystring';
 import { Auth, google } from 'googleapis';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class AuthService {
         private config: ConfigService,
     ) {
         // const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
-        // const clientSecret = this.config.get<string>('GOOGLE_CLIENT_SECRET');
+        // const clientSecret = this.config.get<string>('GOOGLE_SECRET');
         // this.oauthClient = new google.auth.OAuth2(clientId, clientSecret);
     }
 
