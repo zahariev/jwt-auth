@@ -7,24 +7,26 @@ import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AtGuard,
-    },
-  ],
-  imports: [
-    AuthModule,
-    PrismaModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validationSchema: Joi.object({
-        DATABASE_URL: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
-        AT_SECRET: Joi.string().required(),
-        RT_SECRET: Joi.string().required(),
-      }),
-    }),
-  ],
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: AtGuard,
+        },
+    ],
+    imports: [
+        AuthModule,
+        PrismaModule,
+        ConfigModule.forRoot({
+            isGlobal: true,
+            validationSchema: Joi.object({
+                DATABASE_URL: Joi.string().required(),
+                JWT_SECRET: Joi.string().required(),
+                AT_SECRET: Joi.string().required(),
+                RT_SECRET: Joi.string().required(),
+                GOOGLE_CLIENT_ID: Joi.string().required(),
+                GOOGLE_SECRET: Joi.string().required(),
+            }),
+        }),
+    ],
 })
 export class AppModule {}
