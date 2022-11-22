@@ -2,13 +2,11 @@ import { AuthService } from './auth.service';
 import {
     Body,
     Controller,
-    Get,
     HttpCode,
     HttpException,
     HttpStatus,
     Ip,
     Post,
-    Req,
     UseGuards,
 } from '@nestjs/common';
 import { AuthDto, GoogleTokenDto } from './dto';
@@ -24,6 +22,26 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Public()
+    @Post('/google/login')
+    async googleLogin(
+        @Body() body: GoogleTokenDto,
+        @Ip() ip: string, // @Req() req,
+    ): Promise<Tokens> {
+        const result = await this.authService.loginGoogleUser(body.token, ip);
+        if (result) {
+            return result;
+        } else {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Error while logging in with google',
+                },
+                HttpStatus.UNAUTHORIZED,
+            );
+        }
+    }
+
+    @Public()
     @Post('local/signup')
     @HttpCode(HttpStatus.CREATED)
     async signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
@@ -31,7 +49,7 @@ export class AuthController {
     }
 
     @Public()
-    @Post('local/signin')
+    @Post('local/login')
     @HttpCode(HttpStatus.OK)
     async signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
         return this.authService.signinLocal(dto);
@@ -41,37 +59,6 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     logout(@GetCurrentUserId() userId: number) {
         return this.authService.logout(userId);
-    }
-
-    // @Post('google/login')
-    // async googleLogin(@Body() body: GoogleTokenDto, @Req() req, @Ip() ip: string): Promise<Tokens> {
-    //     const result = await this.authService.googleLogin(body.token, {
-    //         userAgent: req.headers['user-agent'],
-    //         ipAddress: ip,
-    //     });
-    //     if (result) return result;
-    //     else {
-    //         throw new HttpException(
-    //             {
-    //                 status: HttpStatus.UNAUTHORIZED,
-    //                 error: 'Error with google login',
-    //             },
-    //             HttpStatus.UNAUTHORIZED,
-    //         );
-    //     }
-    // }
-
-    @Public()
-    @UseGuards(AuthGuard('google'))
-    @Get('google')
-    async googleAuth(@Req() req) {
-        return this.authService.googleLogin(req);
-    }
-
-    @Get('redirect')
-    @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req) {
-        return this.authService.googleLogin(req);
     }
 
     @Public()

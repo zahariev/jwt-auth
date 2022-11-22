@@ -17,9 +17,9 @@ export class AuthService {
         private jwt: JwtService,
         private config: ConfigService,
     ) {
-        // const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
-        // const clientSecret = this.config.get<string>('GOOGLE_SECRET');
-        // this.oauthClient = new google.auth.OAuth2(clientId, clientSecret);
+        const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
+        const clientSecret = this.config.get<string>('GOOGLE_SECRET');
+        this.oauthClient = new google.auth.OAuth2(clientId, clientSecret);
     }
 
     public async signupLocal(dto: AuthDto): Promise<Tokens> {
@@ -68,6 +68,24 @@ export class AuthService {
         return tokens;
     }
 
+    async loginGoogleUser(token: string, ip: string): Promise<Tokens> {
+        const tokenInfo = await this.oauthClient.getTokenInfo(token);
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: tokenInfo.email,
+            },
+        });
+
+        if (!user) {
+            throw new ForbiddenException('Invalid credentials');
+        }
+
+        const tokens = await this.getTokens(user.id, user.email, ip);
+        await this.updateRtHash(user.id, tokens.refresh_token);
+
+        return tokens;
+    }
+
     public async logout(userId: number) {
         await this.prisma.user.updateMany({
             where: {
@@ -104,8 +122,8 @@ export class AuthService {
         return tokens;
     }
 
-    async getTokens(userId: number, email: string): Promise<Tokens> {
-        const payload = { sub: userId, email };
+    async getTokens(userId: number, email: string, ip?: string): Promise<Tokens> {
+        const payload = { sub: userId, email, ip };
 
         const [at, rt] = await Promise.all([
             await this.jwt.signAsync(payload, {
@@ -129,28 +147,5 @@ export class AuthService {
                 hashedRt: hash,
             },
         });
-    }
-
-    // async googleLogin(
-    //     token: string,
-    //     values: { userAgent: string; ipAddress: string },
-    // ): Promise<Tokens | undefined> {
-    //     const tokenInfo = await this.oauthClient.getTokenInfo(token);
-    //     const user = await this.prisma.user.findUnique(tokenInfo.email);
-    //     if (user) {
-    //         return this.getTokens(user.id, user.email);
-    //     }
-    //     return undefined;
-    // }
-
-    async googleLogin(req) {
-        if (!req.user) {
-            return 'No user from google';
-        }
-
-        return {
-            message: 'User information from google',
-            user: req.user,
-        };
     }
 }
