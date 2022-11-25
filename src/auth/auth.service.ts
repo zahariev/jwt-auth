@@ -1,12 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthDto } from './dto';
+import { AuthDto, GoogleUserDto } from './dto';
 import * as argon from 'argon2';
 import { Tokens } from './types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
-import { Auth, google } from 'googleapis';
+import { google } from 'googleapis';
 
 @Injectable()
 export class AuthService {
@@ -68,11 +68,13 @@ export class AuthService {
         return tokens;
     }
 
-    async loginGoogleUser(token: string, ip: string): Promise<Tokens> {
-        const tokenInfo = await this.oauthClient.getTokenInfo(token);
+    async loginGoogleUser(data: GoogleUserDto, ip: string): Promise<Tokens> {
+        // const tokenInfo = await this.oauthClient.getTokenInfo(data.idToken);
+        // console.log(tokenInfo);
+
         const user = await this.prisma.user.findUnique({
             where: {
-                email: tokenInfo.email,
+                email: data.email,
             },
         });
 

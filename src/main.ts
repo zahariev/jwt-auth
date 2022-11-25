@@ -20,6 +20,7 @@ async function bootstrap() {
             disableErrorMessages: process.env.NODE_ENV === 'PRODUCTION' ? true : false,
         }),
     );
+    app.enableCors();
     await app.listen(3003);
 }
 bootstrap();

@@ -9,25 +9,27 @@ import {
     Post,
     UseGuards,
 } from '@nestjs/common';
-import { AuthDto, GoogleTokenDto } from './dto';
+import { AuthDto, GoogleUserDto } from './dto';
 import { Tokens } from './types';
 
 import { RtGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Public()
-    @Post('/google/login')
+    @Post('google/login')
     async googleLogin(
-        @Body() body: GoogleTokenDto,
+        @Body() body: GoogleUserDto,
         @Ip() ip: string, // @Req() req,
     ): Promise<Tokens> {
-        const result = await this.authService.loginGoogleUser(body.token, ip);
+        console.log('googleLogin', body);
+
+        const result = await this.authService.loginGoogleUser(body, ip);
         if (result) {
             return result;
         } else {
