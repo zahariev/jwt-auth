@@ -70,7 +70,7 @@ export class AuthService {
 
     async loginGoogleUser(data: GoogleUserDto, ip: string): Promise<Tokens> {
         // const tokenInfo = await this.oauthClient.getTokenInfo(data.idToken);
-        // console.log(tokenInfo);
+        console.log(ip);
 
         const user = await this.prisma.user.findUnique({
             where: {
@@ -78,7 +78,7 @@ export class AuthService {
             },
         });
 
-        if (!user) {
+        if (!user || !user.active) {
             throw new ForbiddenException('Invalid credentials');
         }
 
