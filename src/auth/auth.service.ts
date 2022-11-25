@@ -82,7 +82,7 @@ export class AuthService {
             throw new ForbiddenException('Invalid credentials');
         }
 
-        const tokens = await this.getTokens(user.id, user.email, ip);
+        const tokens = await this.getTokens(user.id, user.email, 'google');
         await this.updateRtHash(user.id, tokens.refresh_token);
 
         return tokens;
@@ -124,8 +124,8 @@ export class AuthService {
         return tokens;
     }
 
-    async getTokens(userId: number, email: string, ip?: string): Promise<Tokens> {
-        const payload = { sub: userId, email, ip };
+    async getTokens(userId: number, email: string, type?: string): Promise<Tokens> {
+        const payload = { sub: userId, email, type };
 
         const [at, rt] = await Promise.all([
             await this.jwt.signAsync(payload, {
