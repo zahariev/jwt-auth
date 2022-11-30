@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     @Public()
-    @Post('google/login')
+    @Post('google/ui-login')
     async googleLogin(
         @Body() body: GoogleUserDto,
         @Ip() ip: string, // @Req() req,
