@@ -6,11 +6,12 @@ import * as argon from 'argon2';
 import { Tokens } from './types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
+import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 
 @Injectable()
 export class AuthService {
-    private oauthClient = new google.auth.OAuth2();
+    private oauthClient = new OAuth2Client();
 
     constructor(
         private prisma: PrismaService,
@@ -19,7 +20,12 @@ export class AuthService {
     ) {
         const clientId = this.config.get<string>('GOOGLE_CLIENT_ID');
         const clientSecret = this.config.get<string>('GOOGLE_SECRET');
-        this.oauthClient = new google.auth.OAuth2(clientId, clientSecret);
+        const redirectUrl = this.config.get<string>('REDIRECT_URL');
+        this.oauthClient = new OAuth2Client(clientId, clientSecret, redirectUrl);
+        this.oauthClient.on('tokens', (tokens) => {
+            console.info('token event:');
+            console.info(tokens);
+        });
     }
 
     public async signupLocal(dto: AuthDto): Promise<Tokens> {
@@ -68,17 +74,30 @@ export class AuthService {
         return tokens;
     }
 
+    async googleLogin(req) {
+        if (!req.user) {
+            return 'No user from google';
+        }
+
+        return {
+            message: 'User information from google',
+            user: req.user,
+        };
+    }
+
     async loginGoogleUser(data: GoogleUserDto, ip: string): Promise<Tokens> {
-        // const tokenInfo = await this.oauthClient.getTokenInfo(data.idToken);
-        console.log(ip);
+        const tokenInfo = await this.oauthClient.verifyIdToken({ idToken: data.idToken });
+        const userInfo = tokenInfo.getPayload();
+        console.log(userInfo);
 
         const user = await this.prisma.user.findUnique({
             where: {
-                email: data.email,
+                email: userInfo.email,
             },
         });
 
-        if (!user || !user.active) {
+        if (!user) {
+            //|| !user.active) {
             throw new ForbiddenException('Invalid credentials');
         }
 

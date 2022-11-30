@@ -2,17 +2,19 @@ import { AuthService } from './auth.service';
 import {
     Body,
     Controller,
+    Get,
     HttpCode,
     HttpException,
     HttpStatus,
     Ip,
     Post,
+    Request,
     UseGuards,
 } from '@nestjs/common';
 import { AuthDto, GoogleUserDto } from './dto';
 import { Tokens } from './types';
 
-import { RtGuard } from 'src/common/guards';
+import { GoogleOAuthGuard, RtGuard } from 'src/common/guards';
 import { GetCurrentUser, Public } from 'src/common/decorators';
 import { GetCurrentUserId } from 'src/common/decorators/get-current-user-id.decorator';
 // import { AuthGuard } from '@nestjs/passport';
@@ -22,12 +24,26 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Public()
+    @Get('google')
+    @UseGuards(GoogleOAuthGuard)
+    async googleAuth(@Request() req) {
+        return this.authService.googleLogin(req);
+    }
+
+    @Public()
+    @Get('google-redirect')
+    @UseGuards(GoogleOAuthGuard)
+    googleAuthRedirect(@Request() req) {
+        return this.authService.googleLogin(req);
+    }
+
+    @Public()
     @Post('google/login')
     async googleLogin(
         @Body() body: GoogleUserDto,
         @Ip() ip: string, // @Req() req,
     ): Promise<Tokens> {
-        console.log('googleLogin', body);
+        // console.log('googleLogin', body);
 
         const result = await this.authService.loginGoogleUser(body, ip);
         if (result) {

@@ -3,10 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class PrismaService
-    extends PrismaClient
-    implements OnModuleInit, OnModuleDestroy
-{
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
     constructor(config: ConfigService) {
         super({
             datasources: {
@@ -14,6 +11,12 @@ export class PrismaService
                     url: config.get('DATABASE_URL'),
                 },
             },
+        });
+    }
+
+    async enableShutdownHooks() {
+        this.$on('beforeExit', async () => {
+            await this.$disconnect();
         });
     }
 
