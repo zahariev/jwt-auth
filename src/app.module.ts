@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
-
+import { DonationsModule } from './donations/donations.module';
+import { ApolloDriver } from '@nestjs/apollo';
 @Module({
     providers: [
         {
@@ -15,6 +18,12 @@ import { PrismaModule } from './prisma/prisma.module';
     ],
     imports: [
         AuthModule,
+        GraphQLModule.forRoot({
+            driver: ApolloDriver,
+            typePaths: ['./**/*.graphql'],
+            playground: false,
+            plugins: [ApolloServerPluginLandingPageLocalDefault()],
+        }),
         PrismaModule,
         ConfigModule.forRoot({
             isGlobal: true,
@@ -27,6 +36,7 @@ import { PrismaModule } from './prisma/prisma.module';
                 GOOGLE_SECRET: Joi.string().required(),
             }),
         }),
+        DonationsModule,
     ],
 })
 export class AppModule {}
