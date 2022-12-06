@@ -9,19 +9,37 @@
 /* eslint-disable */
 
 export class CreateDonationInput {
-    exampleField?: Nullable<number>;
+    count: number;
+    displayName: string;
+    email: string;
+    mobile?: Nullable<string>;
+    team?: Nullable<string>;
+    message?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
 }
 
 export class UpdateDonationInput {
     id: number;
 }
 
+export class OrderByParams {
+    field: string;
+    direction: string;
+}
+
 export class Donation {
-    exampleField?: Nullable<number>;
+    id: number;
+    count: number;
+    displayName: string;
+    email: string;
+    mobile?: Nullable<string>;
+    team?: Nullable<string>;
+    message?: Nullable<string>;
+    createdAt?: Nullable<DateTime>;
 }
 
 export abstract class IQuery {
-    abstract donations(): Nullable<Donation>[] | Promise<Nullable<Donation>[]>;
+    abstract donations(orderBy?: Nullable<OrderByParams>): Nullable<Donation>[] | Promise<Nullable<Donation>[]>;
 
     abstract donation(id: number): Nullable<Donation> | Promise<Nullable<Donation>>;
 }
@@ -34,4 +52,5 @@ export abstract class IMutation {
     abstract removeDonation(id: number): Nullable<Donation> | Promise<Nullable<Donation>>;
 }
 
+export type DateTime = any;
 type Nullable<T> = T | null;

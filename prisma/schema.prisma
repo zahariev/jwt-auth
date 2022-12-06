@@ -17,10 +17,23 @@ model User {
     updatedAt DateTime @updatedAt
 
     email    String  @unique
-    hash     String
+    hash     String?
     hashedRt String?
 
     active Boolean @default(false)
 
     @@map("users")
+}
+
+model Donation {
+    id          Int      @id @default(autoincrement())
+    count       Int
+    displayName String
+    email       String
+    mobile      String?
+    team        String?
+    message     String?
+    createdAt   DateTime @default(now())
+
+    @@map("donations")
 }

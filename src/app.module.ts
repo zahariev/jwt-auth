@@ -9,6 +9,7 @@ import { AtGuard } from './common/guards';
 import { PrismaModule } from './prisma/prisma.module';
 import { DonationsModule } from './donations/donations.module';
 import { ApolloDriver } from '@nestjs/apollo';
+import { GraphQLDateTime } from 'graphql-iso-date';
 @Module({
     providers: [
         {
@@ -23,6 +24,7 @@ import { ApolloDriver } from '@nestjs/apollo';
             typePaths: ['./**/*.graphql'],
             playground: false,
             plugins: [ApolloServerPluginLandingPageLocalDefault()],
+            resolvers: { DateTime: GraphQLDateTime },
         }),
         PrismaModule,
         ConfigModule.forRoot({

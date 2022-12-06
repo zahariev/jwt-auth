@@ -11,10 +11,18 @@ async function main() {
                 email: 'asda@hotmail.com',
             },
         ],
+        donation: [
+            {
+                email: 'zaharievboyan@gmail.com',
+                displayName: 'Boyan Zahariev',
+                count: 5,
+            },
+        ],
     };
 
     const dbTables = {
         user: 'users',
+        donation: 'donations',
     };
 
     seed(dbTables, prismaModels);
@@ -36,9 +44,7 @@ function seed(dbTables, prismaModels) {
             prisma[model].deleteMany().then(() => {
                 console.log('deleted Many');
                 prisma
-                    .$executeRawUnsafe(
-                        `ALTER SEQUENCE ${dbTables[model]}_id_seq RESTART WITH 1`,
-                    )
+                    .$executeRawUnsafe(`ALTER SEQUENCE ${dbTables[model]}_id_seq RESTART WITH 1`)
                     .then(() => {
                         console.log('alter sequence');
                         setTimeout(() => {
