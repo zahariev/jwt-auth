@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     @Public()
-    @Post('google/ui-login')
+    @Get('google/ui-login')
     async googleLogin(
         @Body() body: GoogleUserDto,
         @Ip() ip: string, // @Req() req,
@@ -67,7 +67,7 @@ export class AuthController {
     }
 
     @Public()
-    @Post('local/login')
+    @Post('local/signin')
     @HttpCode(HttpStatus.OK)
     async signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
         return this.authService.signinLocal(dto);

@@ -56,15 +56,21 @@ export class AuthService {
     }
 
     public async signinLocal(dto: AuthDto): Promise<Tokens> {
-        const user = await this.prisma.user.findUnique({
+        console.log(dto.email);
+
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: dto.email,
+                active: true,
             },
         });
-        if (!user) {
+        if (!user || !user.hash) {
             throw new ForbiddenException('Invalid credentials');
         }
-        const isMatch = await argon.verify(user.hash, dto.password);
+
+        console.log(user);
+
+        const isMatch = await argon.verify(user.hash, dto.password || '');
         if (!isMatch) {
             throw new ForbiddenException('Invalid credentials');
         }

@@ -11,7 +11,7 @@ async function main() {
                 email: 'asda@hotmail.com',
             },
         ],
-        donation: [
+        item: [
             {
                 email: 'zaharievboyan@gmail.com',
                 displayName: 'Boyan Zahariev',
@@ -22,7 +22,7 @@ async function main() {
 
     const dbTables = {
         user: 'users',
-        donation: 'donations',
+        // donation: 'donations',
     };
 
     seed(dbTables, prismaModels);
